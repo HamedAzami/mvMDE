@@ -44,8 +44,8 @@ S_M=sum(M);
 
 y=[];
 for j_embd=1:CH
-    for i_embd=1:N-m+1
-        temp1(i_embd,:)=X(j_embd,i_embd:tau(j_embd):i_embd+M(j_embd)-1);
+    for i_embd=1:N-((m-1)*stau)
+        temp1(i_embd,:)=X(j_embd,i_embd:tau(j_embd):i_embd+(M(j_embd)-1)*tau(j_embd));
     end
     y=horzcat(y,temp1);
     temp1=[];
@@ -80,7 +80,7 @@ end
 pdf=zeros(1,pattern_num); %initialize frequency array
 Comb_M_m=nchoosek(S_M,m);
 
-pv=zeros(Comb_M_m,N-m+1);
+pv=zeros(Comb_M_m,N-((m-1)*stau));
 aa=combnk(1:S_M,m);
 
 for i_pv=1:Comb_M_m
@@ -97,9 +97,10 @@ for i=1:pattern_num
     
 end
 
-npdf=pdf/((N-m+1)*Comb_M_m); % normalize the frequency array to obtain probability density function. 
+npdf=pdf/((N-((m-1)*stau))*Comb_M_m); % normalize the frequency array to obtain probability density function. 
 
 p=npdf(npdf~=0);
 
-Out_mvDE=-sum(p .* log(p));
+Out_mvDE=-sum(p .* log(p))/(log(c^m));
+% Original Implementation without c^m normalization: Out_mvDE=-sum(p .* log(p));
 end
